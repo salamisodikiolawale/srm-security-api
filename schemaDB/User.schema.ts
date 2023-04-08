@@ -7,7 +7,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 const userSchema = new mongoose.Schema<User>({
 
     email : {type : String, required: true, unique:true},
-    password : {type : String, required: true},
+    password : {type : String, required: true, unique:true},
+    roles : {type : [String], required: true},
 
 }, {timestamps : true}); /*>This last line create automatilly : created_at, updated_at*/
 

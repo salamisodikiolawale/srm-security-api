@@ -3,9 +3,12 @@ import { User } from "../models/User.model";
 
 export const userTransformer = (userDto: UserDTO) => {
 
-    const userModel = new User();
-          userModel.email=userDto.email;
-          userModel.password=userDto.password;
+    const userModel:User = {
+        
+        email: userDto.email,
+        password: userDto.password,
+        roles: userDto.roles
+    }
 
     
     return userModel;

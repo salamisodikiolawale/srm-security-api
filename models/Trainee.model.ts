@@ -1,4 +1,6 @@
-export interface Trainee {
+import { GlobalUser } from "./Global.model";
+
+export interface Trainee extends GlobalUser {
 
     _id?:string;
     userId?:string;

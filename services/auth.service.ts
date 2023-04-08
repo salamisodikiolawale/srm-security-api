@@ -2,9 +2,12 @@ import bcrypt from 'bcrypt';
 import { HttpStatusCode } from '../enums/HttpStatusCode';
 import APIError from '../errors/APIError';
 import jsonwebtoken from 'jsonwebtoken';
-import fs from 'fs';
 import dotenv  from 'dotenv';
-import Logger from '../loggers/Logger';
+import { User } from '../models/User.model';
+import { GlobalUser } from '../models/Global.model';
+import { Center } from '../models/Center.model';
+import { Trainer } from '../models/Trainer.model';
+import { Trainee } from '../models/Trainee.model';
 dotenv.config( {path : './.env'});
 
 class AuthService {
@@ -12,7 +15,6 @@ class AuthService {
     
     
     private RSA_KEY_PRIVATE:string|undefined = process.env.RSA_KEY_PRIVATE;
-    private RSA_KEY_PUBLIC:string|undefined = process.env.RSA_KEY_PUBLIC;
     
     constructor(){}
 
@@ -49,7 +51,7 @@ class AuthService {
         }
     }
 
-    getToken(userId:string|undefined): string {
+    getToken(user:User, credentials: any): string {
 
         if( !this.RSA_KEY_PRIVATE ){
             
@@ -61,55 +63,19 @@ class AuthService {
             );
         } else {
             
-            return jsonwebtoken.sign({userId: userId}, this.RSA_KEY_PRIVATE.replace('/\\n/g', '\n'), {
-                subject: userId?.toString(),
+            return jsonwebtoken.sign(
+                {
+                    userId: user._id, 
+                    roles: user.roles, 
+                    email: user.email,
+                    credentials
+                }, 
+                this.RSA_KEY_PRIVATE.replace('/\\n/g', '\n'), {
+                subject: user._id?.toString(),
                 expiresIn: '24h'
             });
         }
     }
-
-    // getDecodedToken(token: string) {
-        
-    //     if( !this.RSA_KEY_PUBLIC ){
-            
-    //         throw new APIError(
-    //             'INTERNAL SERVER',
-    //             HttpStatusCode.INTERNAL_SERVER,
-    //             `La key public n'existe pas`,
-    //             true
-    //         );
-    //     }
-
-    //     return jsonwebtoken.verify(token, this.RSA_KEY_PUBLIC.replace('/\\n/g', '\n'), (error, decoded) => {
-
-    //         return decoded;
-    //     });
-    // }
-
-    // isValidToken(token:  string): boolean {
-        
-    //     if( !this.RSA_KEY_PUBLIC ){
-            
-    //         throw new APIError(
-    //             'INTERNAL SERVER',
-    //             HttpStatusCode.INTERNAL_SERVER,
-    //             `La key public n'existe pas`,
-    //             true
-    //         );
-    //     } else {
-
-    //     jsonwebtoken.verify(token, this.RSA_KEY_PUBLIC.replace('/\\n/g', '\n'), (error, decoded) => {
-
-    //         if(error) {
-    //             return false;
-    //         }
-    //         Logger.info("Valid token")
-    //         return true;
-    //        });
-    //     }
-
-    //     return false;
-    // }
     
 }
 

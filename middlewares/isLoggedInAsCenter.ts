@@ -9,7 +9,7 @@ import { User } from '../models/User.model';
 import { RequestCustom } from '../models/RequestCustom';
 dotenv.config( {path : './.env'});
 
-export const isLoggedInMiddleware = (request:express.Request & RequestCustom, response:express.Response, next:express.NextFunction) => {
+export const isLoggedInAsCenterMiddleware = (request:express.Request & RequestCustom, response:express.Response, next:express.NextFunction) => {
 
     
     const token:string|undefined = request.headers.authorization;
@@ -54,13 +54,26 @@ export const isLoggedInMiddleware = (request:express.Request & RequestCustom, re
                 
                 if(user){
 
-                    request.user = user;
-                    next();
+                    if( user.roles && user.roles.includes('CENTER')){
+
+                        request.user = user;
+                        
+                        next();
+                    } else {
+
+                        //3-Sinon response status 401 unauthorised
+                        Logger.error("Le user n existe pas");
+                        return response.status(HttpStatusCode.UNAUTHORISED).json({
+    
+                            error: 'Vous n\'etes pas autorisé'
+                        });
+                    }
+
 
                 } else {
 
                     Logger.error("Le user n existe pas");
-                    return response.status(HttpStatusCode.UNAUTHORISED).json({
+                    response.status(HttpStatusCode.UNAUTHORISED).json({
 
                         error: 'Vous n\'etes pas autorisé'
                     });

@@ -15,6 +15,9 @@ import { RequestCustom } from "../models/RequestCustom";
 import { CenterDTO } from "../dto/Center.dto";
 import { UserDTO } from "../dto/User.dto";
 import { TraineeDTO } from "../dto/Trainee.dto";
+import { TrainerDTO } from "../dto/Trainer.dto";
+import { Center } from "../models/Center.model";
+import { GlobalUser } from "../models/Global.model";
 
 
 export const signinUser = async (request:express.Request, response:express.Response) => {
@@ -51,7 +54,10 @@ export const signinUser = async (request:express.Request, response:express.Respo
             })
         } 
 
-        const token:string = AuthService.getToken(user._id);
+        const credentialCurrentUser:any = await UserService.getCurrentUserCredentials(user);
+
+
+        const token:string = AuthService.getToken(user, credentialCurrentUser);
         Logger.info(`L'authentification à été un success`);
         return response.status(HttpStatusCode.OK).json(token);
 
@@ -71,6 +77,9 @@ export const signinUser = async (request:express.Request, response:express.Respo
     });
     
 }
+
+
+
     
 
 
@@ -115,11 +124,11 @@ export const signupTrainer = async (request:express.Request, response:express.Re
         return response.status(HttpStatusCode.NOT_FOUND).json(errors);
     }
     
-    const traineeDto:TraineeDTO = request.body;
-    traineeDto.password = AuthService.gethashCode(traineeDto.password);
+    const trainerDto:TrainerDTO = request.body;
+    trainerDto.password = AuthService.gethashCode(trainerDto.password);
     try {
         
-        await UserService.createTrainee(traineeDto);
+        await UserService.createTrainer(trainerDto);
         return response.status(HttpStatusCode.CREATED).json('user created successfully');
 
     } catch (error) {
@@ -172,10 +181,22 @@ export const signupCenter = async (request:express.Request, response:express.Res
 
 export const getCurrentUser = async(request:express.Request & RequestCustom, response:express.Response) => {
 
-    const currentUser:User|undefined = request.user;
+    if( !request.user ) {
+            
+        Logger.error(`L'utilisateur n'existe pas`);
 
+        return response.status(HttpStatusCode.UNAUTHORISED).json({
+
+            errors: `L'utilisateur n'existe pas`
+        })
+    }
+    let currentUser:User = request.user; 
+    currentUser
+    const currentUserDatas = await UserService.getCurrentUserCredentials(currentUser);
+    console.log(currentUserDatas)
     const user = {
-        email:currentUser?.email
+        email:currentUser?.email,
+        currentUserDatas
     };
     
     return response.status(HttpStatusCode.OK).json(user);

@@ -1,4 +1,6 @@
-export interface Center {
+import { GlobalUser } from "./Global.model";
+
+export interface Center extends GlobalUser {
 
     _id?:string;
     userId?:string;

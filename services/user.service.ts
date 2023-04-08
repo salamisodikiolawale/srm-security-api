@@ -19,6 +19,7 @@ import { TrainerDTO } from '../dto/Trainer.dto';
 import { Trainer } from '../models/Trainer.model';
 import { trainerTransformer } from '../transformers/trainer.transormer';
 import TrainerTable from '../schemaDB/Trainer.schema';
+import { GlobalUser } from '../models/Global.model';
 
 class UserService {
    
@@ -28,10 +29,7 @@ class UserService {
 
     async createUser(user: User) {
 
-        const newUser = new UserTable<User>({
-            email: user.email,
-            password: user.password,
-        });
+        const newUser = new UserTable<User>(user);
             
         return await newUser.save();
     }
@@ -41,7 +39,8 @@ class UserService {
         const center:Center = centerTransformer(centerDto);
         const user:User = {
             email: centerDto.email,
-            password: centerDto.password
+            password: centerDto.password,
+            roles: ['CENTER']
         };
 
         
@@ -70,7 +69,8 @@ class UserService {
         const user:User = {
 
             email: traineeDto.email,
-            password: traineeDto.password
+            password: traineeDto.password,
+            roles: ['TRAINEE']
         };
               
 
@@ -98,7 +98,8 @@ class UserService {
         const user:User = {
 
             email: trainerDto.email,
-            password: trainerDto.password
+            password: trainerDto.password,
+            roles: ['TRAINER']
         };
               
 
@@ -135,6 +136,64 @@ class UserService {
         const user:User|null = await UserTable.findOne({ '_id': id}).exec();
         return user;
     }
+
+    async getCenter(userId:string|undefined): Promise<Center|null> {
+
+        if( !userId ) {
+            return null;
+        }
+
+        const center:Center|null = await CenterTable.findOne({ 'userId': userId}).exec();
+        
+        return center;
+
+    }
+
+    async getCurrentUserCredentials(user:User): Promise<GlobalUser|null> {
+
+        if(user && user.roles && user.roles.includes('CENTER')){
+
+            return await CenterTable.findOne({ 'userId': user._id}).exec();
+        }
+
+        if(user && user.roles && user.roles.includes('TRAINER')){
+
+            return await TrainerTable.findOne({ 'userId': user._id}).exec();
+        }   
+
+        if(user && user.roles && user.roles.includes('TRAINEE')){
+            
+            return await TraineeTable.findOne({ 'userId': user._id}).exec();
+        }
+
+        return null;
+    }
+
+    async getTrainer(userId:string|undefined): Promise<Trainer|null> {
+
+        if( !userId ) {
+            return null;
+        }
+
+        const trainer:Trainer|null = await TrainerTable.findOne({ 'userId': userId}).exec();
+        
+        return trainer;
+
+    }
+
+    async getTrainee(userId:string|undefined): Promise<Trainee|null> {
+
+        if( !userId ) {
+            return null;
+        }
+
+        const trainee:Trainee|null = await TraineeTable.findOne({ 'userId': userId}).exec();
+        
+        return trainee;
+
+    }
+
+
 }
 
 export default new UserService();
