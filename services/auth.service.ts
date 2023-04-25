@@ -4,10 +4,6 @@ import APIError from '../errors/APIError';
 import jsonwebtoken from 'jsonwebtoken';
 import dotenv  from 'dotenv';
 import { User } from '../models/User.model';
-import { GlobalUser } from '../models/Global.model';
-import { Center } from '../models/Center.model';
-import { Trainer } from '../models/Trainer.model';
-import { Trainee } from '../models/Trainee.model';
 dotenv.config( {path : './.env'});
 
 class AuthService {

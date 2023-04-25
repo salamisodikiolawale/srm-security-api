@@ -1,0 +1,36 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+services:
+
+  srm-front:
+    build:
+      context: ./SRM-Security-Front
+      dockerfile: Dockerfile
+    container_name: srm-front
+    restart: 'no'
+    volumes:
+      - type: bind
+        source: ./SRM-Security-Front
+        target: /app/src
+      - type: bind
+        source: ./SRM-Security-Front/
+        target: /app/
+    ports:
+      - 4200:4200
+
+  srm-api:
+    build:
+      context: ./SRM-Security-Api
+      dockerfile: Dockerfile
+    container_name: srm-api
+    restart: 'no'
+    volumes:
+      - type: bind
+        source: ./SRM-Security-Api
+        target: /app
+    ports:
+      - 3000:3000
+    
+volumes:
+  srm-volume:

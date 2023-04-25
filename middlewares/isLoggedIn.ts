@@ -59,7 +59,7 @@ export const isLoggedInMiddleware = (request:express.Request & RequestCustom, re
 
                 } else {
 
-                    Logger.error("Le user n existe pas");
+                    Logger.error("[isLoggedInMiddleware] => Le user n existe pas");
                     return response.status(HttpStatusCode.UNAUTHORISED).json({
 
                         error: 'Vous n\'etes pas autorisé'
@@ -69,11 +69,11 @@ export const isLoggedInMiddleware = (request:express.Request & RequestCustom, re
             })
         } catch (error) {
             
-            Logger.error("Une erreur rencontré lors de la récuperation du user");
+            Logger.error("[isLoggedInMiddleware] => Une erreur rencontré lors de la récuperation du user");
             return response.status(HttpStatusCode.UNAUTHORISED).json({
                 'error':error
             });
         }
     });
 
-}   
+} 

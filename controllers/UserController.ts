@@ -63,17 +63,10 @@ export const signinUser = async (request:express.Request, response:express.Respo
 
     }).catch( (errors:any) => {
 
-        response.status(HttpStatusCode.UNAUTHORISED).json({
+        return response.status(HttpStatusCode.UNAUTHORISED).json({
 
             msg: 'Authentification échouée'
         });
-
-        throw new APIError(
-            'INTERNAL SERVER',
-            HttpStatusCode.INTERNAL_SERVER,
-            `Une erreur s'est produit lors l'authentification ==> ${errors}`,
-            true
-        );
     });
     
 }
@@ -103,14 +96,7 @@ export const signupTrainee = async (request:express.Request, response:express.Re
         
         Logger.error(error);
         
-        response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
-         
-        throw new APIError(
-               'INTERNAL SERVER',
-               HttpStatusCode.INTERNAL_SERVER,
-               `Erreur lors de l\'enregistrement du user`,
-               true
-        );
+        return response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
     }
 
 }
@@ -135,14 +121,7 @@ export const signupTrainer = async (request:express.Request, response:express.Re
         
         Logger.error(error);
         
-        response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
-         
-        throw new APIError(
-               'INTERNAL SERVER',
-               HttpStatusCode.INTERNAL_SERVER,
-               `Erreur lors de l\'enregistrement du user`,
-               true
-        );
+        return response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
     }
 
 }
@@ -167,14 +146,8 @@ export const signupCenter = async (request:express.Request, response:express.Res
         
         Logger.error(error);
         
-        response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
+        return response.status(HttpStatusCode.INTERNAL_SERVER).json(error);
          
-        throw new APIError(
-               'INTERNAL SERVER',
-               HttpStatusCode.INTERNAL_SERVER,
-               `Erreur lors de l\'enregistrement du user`,
-               true
-        );
     }
 
 }
@@ -193,7 +166,6 @@ export const getCurrentUser = async(request:express.Request & RequestCustom, res
     let currentUser:User = request.user; 
     currentUser
     const currentUserDatas = await UserService.getCurrentUserCredentials(currentUser);
-    console.log(currentUserDatas)
     const user = {
         email:currentUser?.email,
         currentUserDatas

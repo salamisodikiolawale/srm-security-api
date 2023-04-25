@@ -53,7 +53,6 @@ export const isLoggedInAsCenterMiddleware = (request:express.Request & RequestCu
             userService.getUserById(sub).then( (user:User|null) => {
                 
                 if(user){
-
                     if( user.roles && user.roles.includes('CENTER')){
 
                         request.user = user;
@@ -62,7 +61,7 @@ export const isLoggedInAsCenterMiddleware = (request:express.Request & RequestCu
                     } else {
 
                         //3-Sinon response status 401 unauthorised
-                        Logger.error("Le user n existe pas");
+                        Logger.error("[isLoggedInAsCenterMiddleware] => Le user n existe pas !");
                         return response.status(HttpStatusCode.UNAUTHORISED).json({
     
                             error: 'Vous n\'etes pas autorisé'
@@ -72,8 +71,8 @@ export const isLoggedInAsCenterMiddleware = (request:express.Request & RequestCu
 
                 } else {
 
-                    Logger.error("Le user n existe pas");
-                    response.status(HttpStatusCode.UNAUTHORISED).json({
+                    Logger.error("[isLoggedInAsCenterMiddleware] => Le user n existe pas");
+                    return response.status(HttpStatusCode.UNAUTHORISED).json({
 
                         error: 'Vous n\'etes pas autorisé'
                     });
@@ -82,7 +81,7 @@ export const isLoggedInAsCenterMiddleware = (request:express.Request & RequestCu
             })
         } catch (error) {
             
-            Logger.error("Une erreur rencontré lors de la récuperation du user");
+            Logger.error("[isLoggedInAsCenterMiddleware] => Une erreur rencontré lors de la récuperation du user");
             return response.status(HttpStatusCode.UNAUTHORISED).json({
                 'error':error
             });
